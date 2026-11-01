@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><title>ADIM-İST canlı deneme</title>
+<script src="config.js"></script>
+<style>
+:root{--bg:#EEF2EE;--surface:#FFFFFF;--ink:#14231C;--muted:#5B6B62;--line:#DCE4DD;--lane:#1F7A55;--lane-soft:#D9EFE3;--bad:#C2412D}
+@media (prefers-color-scheme:dark){:root{--bg:#0F1813;--surface:#17231C;--ink:#E6EEE8;--muted:#9BB0A3;--line:#2A3A31;--lane:#4FBF8A;--lane-soft:#1D3A2B;--bad:#F07A66}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:960px;margin:0 auto;padding:24px 16px}h1{font-size:24px;margin:0 0 4px}.m{color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;margin:16px 0}
+input,select{font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);min-width:0}
+button{font:inherit;padding:8px 14px;border:0;border-radius:8px;background:var(--lane);color:#fff;cursor:pointer}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+td,th{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left}th{color:var(--muted);font-weight:600}td.n{text-align:right}
+.bars{display:flex;align-items:flex-end;gap:3px;height:160px;border-bottom:1px solid var(--line);overflow-x:auto}
+.bar{flex:1 0 14px;background:var(--lane);border-radius:4px 4px 0 0;position:relative}.bar:hover{opacity:.8}
+.err{color:var(--bad)}.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}.kpi b{display:block;font-size:22px}
+a{color:var(--lane)}
+</style></head><body><main>
+<p><a href="index.html">← Prototipler</a></p>
+<h1>Canlı deneme verisi</h1>
+<p class="m">Telefondaki öğrenci uygulamasının gönderdiği kodlu günlük adımlar. Yalnızca giriş yapan araştırma ekibi görür. Çocuk verisi içermez.</p>
+<div class="card" id="giris">
+  <div class="row"><input id="ep" type="email" placeholder="E-posta" autocomplete="username"><input id="pw" type="password" placeholder="Şifre" autocomplete="current-password"><button id="gir">Giriş</button></div>
+  <p id="gmsg" class="m"></p>
+</div>
+<div id="veri" hidden>
+  <div class="card row"><label>Kod <select id="kod"></select></label><button id="yenile">Yenile</button><span id="zaman" class="m"></span></div>
+  <div class="card kpis" id="kpi"></div>
+  <div class="card"><b>Günlük adım</b><div class="bars" id="bars"></div><p class="m" id="aralik"></p></div>
+  <div class="card"><table><thead><tr><th>Tarih</th><th class="n">Adım</th><th>Kaynak</th><th>Son gönderim</th></tr></thead><tbody id="tb"></tbody></table></div>
+</div>
+<script>
+const C=window.ADIM_SUNUCU, U=(C.url||'').replace(/\/$/,''); let tok=null, rows=[];
+const $=s=>document.querySelector(s), tr=n=>Number(n).toLocaleString('tr-TR');
+function esc(x){return String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+try{tok=sessionStorage.getItem('adim-tok')}catch(e){}
+$('#gir').onclick=async()=>{ $('#gmsg').textContent='Giriş yapılıyor…';
+  try{const r=await fetch(U+'/auth/v1/token?grant_type=password',{method:'POST',headers:{apikey:C.anon,'Content-Type':'application/json'},body:JSON.stringify({email:$('#ep').value,password:$('#pw').value})});
+    const j=await r.json(); if(!r.ok) throw new Error(j.error_description||j.msg||r.status);
+    tok=j.access_token; try{sessionStorage.setItem('adim-tok',tok)}catch(e){} yukle();
+  }catch(e){ $('#gmsg').innerHTML='<span class="err">Giriş olmadı: '+esc(e.message)+'</span>'; } };
+async function yukle(){
+  const r=await fetch(U+'/rest/v1/adim_gunluk?select=*&order=tarih.asc',{headers:{apikey:C.anon,Authorization:'Bearer '+tok}});
+  if(r.status===401){ tok=null; try{sessionStorage.removeItem('adim-tok')}catch(e){} $('#giris').hidden=false; $('#veri').hidden=true; $('#gmsg').textContent='Oturum süresi doldu, tekrar giriş yapın.'; return; }
+  rows=await r.json(); $('#giris').hidden=true; $('#veri').hidden=false;
+  const kodlar=[...new Set(rows.map(x=>x.kod))], sec=$('#kod').value;
+  $('#kod').innerHTML=kodlar.map(k=>`<option ${k===sec?'selected':''}>${esc(k)}</option>`).join('')||'<option>Henüz veri yok</option>';
+  $('#zaman').textContent='Güncellendi '+new Date().toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}); ciz(); }
+function ciz(){ const k=$('#kod').value, d=rows.filter(x=>x.kod===k); const max=Math.max(1,...d.map(x=>x.adim));
+  const ort=d.length?Math.round(d.reduce((a,x)=>a+x.adim,0)/d.length):0, son=d[d.length-1];
+  const sirali=d.map(x=>x.adim).sort((a,b)=>a-b), med=sirali.length?sirali[Math.floor((sirali.length-1)/2)]:0;
+  $('#kpi').innerHTML=[['Gün sayısı',d.length],['Ortalama',tr(ort)],['Medyan',tr(med)],['Son gönderim',son?new Date(son.alindi).toLocaleString('tr-TR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):'yok']].map(([a,b])=>`<div class="kpi"><span class="m">${a}</span><b>${b}</b></div>`).join('');
+  $('#bars').innerHTML=d.map(x=>`<div class="bar" style="height:${Math.max(2,x.adim/max*100)}%" title="${esc(x.tarih)}: ${tr(x.adim)} adım"></div>`).join('');
+  $('#aralik').textContent=d.length?d[0].tarih+' – '+son.tarih:'';
+  $('#tb').innerHTML=d.slice().reverse().map(x=>`<tr><td>${esc(x.tarih)}</td><td class="n">${tr(x.adim)}</td><td>${esc(x.kaynak)}</td><td>${new Date(x.alindi).toLocaleString('tr-TR')}</td></tr>`).join(''); }
+$('#kod').onchange=ciz; $('#yenile').onclick=yukle; if(tok) yukle();
+</script></main></body></html>
