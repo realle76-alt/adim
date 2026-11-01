@@ -14,7 +14,7 @@
     try{ if(!zorla && localStorage.getItem(KEY)===bugun+'|'+days[days.length-1]) return; }catch(_){}
     var satir=[], n=days.length;
     for(var i=0;i<n;i++){ var d=new Date(); d.setDate(d.getDate()-(n-1-i));
-      if(days[i]>0) satir.push({kod:kod, tarih:ymd(d), adim:Math.round(days[i]), kaynak:'health-connect', surum:'v7'}); }
+      if(days[i]>0) satir.push({kod:kod, tarih:ymd(d), adim:Math.round(days[i]), kaynak:'health-connect', surum:'v9'}); }
     if(!satir.length) return;
     fetch(CFG.url.replace(/\/$/,'')+'/rest/v1/adim_deneme',{method:'POST',
       headers:{'apikey':CFG.anon,'Content-Type':'application/json','Prefer':'return=minimal'},
