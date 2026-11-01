@@ -147,9 +147,9 @@ tr:last-child td{border-bottom:0}
 <script>
 /* ---------- roles and permissions ---------- */
 const ROLES={
-  pi:{n:'Aylin Hoca · Proje yürütücüsü', full:true, d:'Tam erişim: tüm bölümler, gerçek kol, kimlik kasası ve sağlık verisi. Her erişim denetim günlüğüne yazılır.'},
-  saha:{n:'Alp · Saha koordinatörü', full:true, d:'Tam erişim: tüm bölümler, gerçek kol, kimlik kasası ve sağlık verisi. Kayıt, saat eşleştirme, okulda eşitleme ve telefonu olmayanlar için PNG kod da bu roldedir.'},
-  edebali:{n:'Edebali · Araştırmacı', full:true, d:'Tam erişim: tüm bölümler, gerçek kol, kimlik kasası ve sağlık verisi. Her erişim denetim günlüğüne yazılır.'},
+  pi:{n:'Proje yürütücüsü', full:true, d:'Tam erişim: tüm bölümler, gerçek kol, kimlik kasası ve sağlık verisi. Her erişim denetim günlüğüne yazılır.'},
+  saha:{n:'Saha koordinatörü', full:true, d:'Tam erişim: tüm bölümler, gerçek kol, kimlik kasası ve sağlık verisi. Kayıt, saat eşleştirme, okulda eşitleme ve telefonu olmayanlar için PNG kod da bu roldedir.'},
+  arastirmaci:{n:'Araştırmacı', full:true, d:'Tam erişim: tüm bölümler, gerçek kol, kimlik kasası ve sağlık verisi. Her erişim denetim günlüğüne yazılır.'},
   klinik:{n:'İÜ klinik ekibi', d:'Ölçüm girişi ve risk uyarıları. Kola kördür; adım ve puanı görmez.'},
   biyo:{n:'Biyoistatistikçi', d:'Randomizasyon listesini yükler, veriyi sahte kol etiketleriyle (A/B) dışa aktarır. Kimlik görmez.'},
   dpo:{n:'Veri koruma sorumlusu', d:'Denetim günlüğü, kullanıcı ve yetki yönetimi, kimlik kasasının imhası. Sağlık verisini görmez.'},
@@ -178,7 +178,7 @@ Object.keys(ROLES).filter(r=>ROLES[r].full).forEach(r=>SECTIONS.forEach(s=>s.acc
 const SEE={
   pi:{arm:'gercek',steps:1,health:1,points:1,identity:1},
   saha:{arm:'gercek',steps:1,health:1,points:1,identity:1},
-  edebali:{arm:'gercek',steps:1,health:1,points:1,identity:1},
+  arastirmaci:{arm:'gercek',steps:1,health:1,points:1,identity:1},
   klinik:{arm:0,steps:0,health:1,points:0,identity:'uyari'},
   biyo:{arm:'ab',steps:1,health:1,points:1,identity:0},
   dpo:{arm:0,steps:0,health:0,points:0,identity:0},
