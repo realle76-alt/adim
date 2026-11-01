@@ -142,7 +142,7 @@ textarea{font:12px/1.4 var(--font-mono);min-height:64px;resize:vertical}
 </style>
 
 <div class="wrap">
-  <section class="tablet" aria-label="Gişe tableti">
+  <section class="tablet" aria-label="Gişe telefonu">
     <div class="topbar">
       <div class="brand">
         <span class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M21 14v7h-7"/></svg></span>
@@ -165,15 +165,15 @@ textarea{font:12px/1.4 var(--font-mono);min-height:64px;resize:vertical}
 
   <div class="console" aria-label="Deneme paneli">
     <div class="panel">
-      <span class="eyebrow">Deneme paneli · tablette yok</span>
-      <p class="note">Gerçek tablet kamerayla QR okur (Android sürümünde kamera açıktır). Burada öğrencinin göstereceği farklı kodları seçerek okutabilirsiniz.</p>
+      <span class="eyebrow">Deneme paneli · telefonda yok</span>
+      <p class="note">Gerçek uygulama telefon kamerasıyla QR okur (Android sürümünde kamera açıktır). Burada öğrencinin göstereceği farklı kodları seçerek okutabilirsiniz.</p>
       <div class="scen" id="scen">
         <button class="btn ghost" data-s="valid">Geçerli kod<small>Bu tesis için, süresi var</small></button>
         <button class="btn ghost" data-s="reuse">Aynı kodu tekrar okut<small>Son onaylanan kod</small></button>
         <button class="btn ghost" data-s="expired">Süresi dolmuş kod<small>5 dakika geçmiş</small></button>
         <button class="btn ghost" data-s="otherfac">Başka tesisin kodu<small>Buz pisti için üretilmiş</small></button>
         <button class="btn ghost" data-s="forged">Değiştirilmiş kod<small>Kademe elle yükseltilmiş</small></button>
-        <button class="btn ghost" data-s="twin">İkinci tablette de kullanılmış<small>Mutabakatta ortaya çıkar</small></button>
+        <button class="btn ghost" data-s="twin">İkinci telefonda de kullanılmış<small>Mutabakatta ortaya çıkar</small></button>
         <button class="btn ghost" data-s="printed">İndirilmiş QR (PNG)<small>Telefondan ya da çıktıdan, 24 saat geçerli</small></button>
         <button class="btn ghost" data-s="printedOld">Süresi geçmiş PNG kod<small>Dün sabah indirilmiş</small></button>
         <button class="btn ghost" data-s="garbage">Başka bir QR<small>Menü, reklam vb.</small></button>
@@ -184,7 +184,7 @@ textarea{font:12px/1.4 var(--font-mono);min-height:64px;resize:vertical}
     </div>
     <div class="panel">
       <span class="eyebrow">Cihaz ayarı</span>
-      <label class="eyebrow" for="facSel">Bu tablet hangi gişede?</label>
+      <label class="eyebrow" for="facSel">Bu telefon hangi gişede?</label>
       <select id="facSel"></select>
       <button class="btn ghost" id="net">İnterneti aç</button>
       <button class="btn ghost" id="reset">Baştan başlat</button>
@@ -254,7 +254,7 @@ function verify(text){
   out.checks.push([facOk?'y':'n', facOk?`Bu gişe için üretilmiş (${p.fac})`:`Bu kod ${FAC[p.fac]?.n||p.fac} (${p.fac}) için`]);
   if(!facOk) return {...out, pass:false, title:'Kod başka bir tesis için', say:`Bu kod ${FAC[p.fac]?.n||'başka bir tesis'} için. Orada kullanabilirsin ya da iptal edip burası için yeni kod oluşturabilirsin.`};
   const fresh=!G.used[p.tid];
-  out.checks.push([fresh?'y':'n', fresh?'Bu tablette daha önce okutulmadı':`Bu tablette ${hhmm(new Date(G.used[p.tid]))}'de zaten kullanıldı`]);
+  out.checks.push([fresh?'y':'n', fresh?'Bu telefonda daha önce okutulmadı':`Bu telefonda ${hhmm(new Date(G.used[p.tid]))}'de zaten kullanıldı`]);
   if(!fresh) return {...out, pass:false, title:'Kod zaten kullanılmış', say:'Bu kod daha önce kullanıldı. Bir yanlışlık olduğunu düşünüyorsan okuldaki çalışma sorumlusuna söyle.'};
   return {...out, pass:true, title:'Onaylandı', give:FAC[G.fac].give, tierName:TIERNAME[p.tier]+(printed?' · PNG kod':'')};
 }
@@ -277,11 +277,11 @@ function settle(status){
 }
 
 function sync(){
-  if(!G.online){ toast('Mutabakat için internet gerekli. Tablet kodları internetsiz okumaya devam eder.'); return; }
+  if(!G.online){ toast('Mutabakat için internet gerekli. Gişe telefonu kodları internetsiz okumaya devam eder.'); return; }
   const pend=G.records.filter(x=>!x.synced);
   const res={sent:pend.length, ok:0, refund:0, twin:0, rej:0};
   pend.forEach(x=>{ x.synced=true;
-    if(x.status==='verildi'){ if(x.twin){res.twin++; x.flag='Aynı kod başka tablette de onaylanmış';} else res.ok++; }
+    if(x.status==='verildi'){ if(x.twin){res.twin++; x.flag='Aynı kod başka telefonda de onaylanmış';} else res.ok++; }
     else if(x.status==='iptal') res.refund++; else res.rej++; });
   G.syncAt=Date.now(); G.keysAt=Date.now(); lastSync=res; save();
   log(`Mutabakat: ${res.sent} kayıt gönderildi, saat ve anahtar listesi güncellendi`);
@@ -294,7 +294,7 @@ function viewOkut(){
   const f=FAC[G.fac];
   let right;
   if(!result) right=`<div class="idle"><span class="eyebrow">Hazır</span><h2>Öğrencinin telefonundaki QR kodu kameraya tutun</h2>
-      <p>Tablet kodu internetsiz doğrular. Öğrencinin adını ya da kimliğini sormanız gerekmez, kodda kimlik bilgisi yoktur.</p>
+      <p>Gişe telefonu kodu internetsiz doğrular. Öğrencinin adını ya da kimliğini sormanız gerekmez, kodda kimlik bilgisi yoktur.</p>
       <p>Bu gişede yalnızca <b style="color:var(--ink)">${f.n}</b> için üretilmiş kodlar geçer.</p></div>`;
   else if(result.pass){
     const r=result, settled=r.state!=='bekliyor';
@@ -307,7 +307,7 @@ function viewOkut(){
            <div id="whyBox" hidden><label class="eyebrow" for="why">Neden verilemedi?</label>
              <select id="why"><option>Seans dolu</option><option>Tesis kapalı ya da bakımda</option><option>Öğrenci vazgeçti</option><option>Stok bitti</option></select>
              <button class="btn ghost" id="cantgo" style="margin-top:8px">Verilemedi olarak kaydet</button></div>`}
-      <details><summary class="note">Tablet neleri kontrol etti?</summary><div class="checks" style="margin-top:8px">${checks(r)}</div></details>
+      <details><summary class="note">Telefon neleri kontrol etti?</summary><div class="checks" style="margin-top:8px">${checks(r)}</div></details>
     </div>`;
   } else {
     const r=result;
@@ -315,7 +315,7 @@ function viewOkut(){
       <div class="verdict"><span class="ic" aria-hidden="true">✕</span><div><b>REDDEDİLDİ</b><span class="note">${r.title}${r.short?` · kod …${r.short}`:''}</span></div></div>
       <div class="say"><span>Öğrenciye söyleyin</span>${r.say}</div>
       <div class="checks">${checks(r)}</div>
-      <p class="note">Ödül vermeyin. Bir şey kaydetmeniz gerekmiyor, ret tablete otomatik yazıldı.</p>
+      <p class="note">Ödül vermeyin. Bir şey kaydetmeniz gerekmiyor, ret telefona otomatik yazıldı.</p>
       <button class="btn ghost" id="next">Sıradaki kodu okut</button>
     </div>`;
   }
@@ -337,7 +337,7 @@ function viewBugun(){
       <span>${lastSync.sent} kayıt sunucuya gönderildi.</span>
       ${lastSync.ok?`<span class="ok" style="color:var(--good)">✓ ${lastSync.ok} ödül sunucuda kullanıldı olarak işaretlendi.</span>`:''}
       ${lastSync.refund?`<span>${lastSync.refund} verilemeyen ödülün puanı öğrenciye iade edildi.</span>`:''}
-      ${lastSync.twin?`<span style="color:var(--bad)">✗ ${lastSync.twin} kod aynı tesisteki başka bir tablette de onaylanmış. Araştırma ekibine bildirildi, sizin bir şey yapmanız gerekmez.</span>`:''}
+      ${lastSync.twin?`<span style="color:var(--bad)">✗ ${lastSync.twin} kod aynı tesisteki başka bir telefonda de onaylanmış. Araştırma ekibine bildirildi, sizin bir şey yapmanız gerekmez.</span>`:''}
       ${!lastSync.sent?'<span class="note">Gönderilecek yeni kayıt yoktu.</span>':''}</div>`:''}
     <div class="tablewrap"><table><thead><tr><th>Saat</th><th>Kod</th><th>Ödül</th><th>Sonuç</th><th>Mutabakat</th></tr></thead><tbody>
       ${R.map(x=>`<tr><td class="num">${hhmm(new Date(x.t))}</td><td class="mono">…${x.short}</td><td>${x.tier?TIERNAME[x.tier]:'—'}</td>
@@ -349,7 +349,7 @@ function viewBugun(){
 function ago(t){ const m=Math.round((Date.now()-t)/60000); return m<1?'az önce':m<60?`${m} dk önce`:`${Math.round(m/60)} saat önce`; }
 function viewCihaz(){
   const f=FAC[G.fac], keyAge=(Date.now()-G.keysAt)/3600000;
-  return `<div class="split"><div style="display:grid;gap:12px"><h2>Bu tablet</h2><div class="kv">
+  return `<div class="split"><div style="display:grid;gap:12px"><h2>Bu telefon</h2><div class="kv">
       <div><span>Tesis</span><span>${f.n}</span></div><div><span>Gişe</span><span>${f.a} · ${G.fac}</span></div>
       <div><span>Kabul edilen ödül</span><span>${TIERNAME[f.tier]}</span></div><div><span>Verilecek</span><span>${f.give}</span></div>
       <div><span>İnternet</span><span>${G.online?'Bağlı':'Yok, kodlar yine okunur'}</span></div>
@@ -358,10 +358,10 @@ function viewCihaz(){
       <div><span>Mutabakat bekleyen</span><span>${G.records.filter(x=>!x.synced).length} kayıt</span></div></div></div>
     <div style="display:grid;gap:12px"><h2>Nasıl çalışır?</h2>
       <div class="box"><p>Öğrenci kodu gişenin önünde, internetle oluşturur. Kod 5 dakika geçerlidir ve yalnızca bu gişede geçer. Öğrenci kodu PNG olarak da indirebilir (telefonu olmayan öğrenciler için saha ekibi üretir); bu kod ${PNG_HOURS} saat geçerlidir, tek kullanımlıktır ve yine yalnızca bir tesiste geçer.</p>
-      <p>Tablet kodu internetsiz doğrular: imzaya, süreye, tesis numarasına ve bu tablette daha önce okutulup okutulmadığına bakar.</p>
-      <p>İnternet geldiğinde tablet günün kayıtlarını sunucuya gönderir. Sunucu aynı kodun başka bir tablette de kullanılıp kullanılmadığını burada yakalar.</p></div>
+      <p>Gişe telefonu kodu internetsiz doğrular: imzaya, süreye, tesis numarasına ve bu telefonda daha önce okutulup okutulmadığına bakar.</p>
+      <p>İnternet geldiğinde telefon günün kayıtlarını sunucuya gönderir. Sunucu aynı kodun başka bir telefonda de kullanılıp kullanılmadığını burada yakalar.</p></div>
       ${keyAge>24?`<div class="box" style="background:var(--warn-soft);color:var(--warn)">Anahtar listesi 24 saatten eski. Bugün bir kez internete bağlanın.</div>`:''}
-      <div class="box"><b>Bu tablet neyi görmez?</b><span class="note">Öğrencinin adını, okulunu, adım sayısını ve sağlık verisini görmez. Kodda yalnızca ödül türü, tesis ve süre vardır.</span></div></div></div>`;
+      <div class="box"><b>Bu telefon neyi görmez?</b><span class="note">Öğrencinin adını, okulunu, adım sayısını ve sağlık verisini görmez. Kodda yalnızca ödül türü, tesis ve süre vardır.</span></div></div></div>`;
 }
 function viewYardim(){
   const I=[['Onaylandı','Ödülü verin, sonra “Ödülü verdim”e basın. Veremezseniz “Veremedim”i seçin, puan öğrenciye iade edilir.'],
@@ -397,7 +397,7 @@ function render(){
 }
 document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{G.tab=b.dataset.tab; save(); render();});
 $('#facSel').innerHTML=Object.entries(FAC).map(([id,f])=>`<option value="${id}">${id} · ${f.n} (${f.a})</option>`).join('');
-$('#facSel').onchange=e=>{ G.fac=e.target.value; result=null; log(`Tablet ${G.fac} gişesine atandı`); save(); render(); };
+$('#facSel').onchange=e=>{ G.fac=e.target.value; result=null; log(`Telefon ${G.fac} gişesine atandı`); save(); render(); };
 $('#net').onclick=()=>{ G.online=!G.online; log(G.online?'İnternet geldi':'İnternet kesildi'); save(); render(); };
 $('#reset').onclick=()=>{ G=seed(); result=null; lastSync=null; logs.length=0; $('#log').innerHTML=''; save(); render(); toast('Deneme baştan başladı.'); };
 const other=()=>{ const ids=Object.keys(FAC).filter(i=>i!==G.fac&&FAC[i].tier===FAC[G.fac].tier); return ids[0]||Object.keys(FAC).find(i=>i!==G.fac); };
@@ -407,7 +407,7 @@ const SC={
   expired:()=>scan(mint(G.fac,-7*60),'Süresi dolmuş kod'),
   otherfac:()=>scan(mint(other(),3*60),'Başka tesisin kodu'),
   forged:()=>{ const t=mint(G.fac,200); const [b,s]=t.split('.'); const p=unb64(b); p.tier=3; scan(b64(p)+'.'+s,'Değiştirilmiş kod'); },
-  twin:()=>{ const t=mint(G.fac,150); G.twin[unb64(t.split('.')[0]).tid]=1; scan(t,'İkinci tablette de kullanılan kod'); },
+  twin:()=>{ const t=mint(G.fac,150); G.twin[unb64(t.split('.')[0]).tid]=1; scan(t,'İkinci telefonda de kullanılan kod'); },
   printed:()=>scan(mint(G.fac,PNG_HOURS*3600-5*3600,'p'),'İndirilmiş QR (PNG)'),
   printedOld:()=>scan(mint(G.fac,-3*3600,'p'),'Süresi geçmiş PNG kod'),
   garbage:()=>scan('https://ornek-kafe.com/menu','Başka bir QR')
@@ -415,7 +415,7 @@ const SC={
 document.querySelectorAll('#scen [data-s]').forEach(b=>b.onclick=()=>SC[b.dataset.s]());
 $('#pasteGo').onclick=()=>{ const v=$('#paste').value.trim(); if(!v){toast('Önce kod metnini yapıştırın.');return;} scan(v,'Yapıştırılan kod'); };
 setInterval(()=>{$('#clock').textContent=hhmm(new Date());},15000);
-render(); log('Tablet açıldı, çevrimdışı mod; anahtar listesi tablette kayıtlı');
+render(); log('Uygulama açıldı, çevrimdışı mod; anahtar listesi telefonda kayıtlı');
 </script>
 
 </body></html>

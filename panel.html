@@ -584,12 +584,12 @@ function vOdul(){
       <select id="pqFac">${FACS.map(f=>`<option value="${f[0]}">${f[0]} · ${f[1]} (${[0,300,750,1800][f[2]]} puan)</option>`).join('')}</select>
       <button class="btn" id="pqGo">Üret ve PNG indir</button></div>
     ${S.printed.length?`<div class="tablewrap"><table><thead><tr><th>Kod</th><th>Tesis</th><th>Kod sonu</th><th>Geçerlilik</th></tr></thead><tbody>${S.printed.map(x=>`<tr><td class="mono">${x.code}</td><td>${x.fac}</td><td class="mono">…${x.short}</td><td>24 saat</td></tr>`).join('')}</tbody></table></div>`:''}</div>`;
-  return `<div class="head"><div><span class="eyebrow">${bel?'Tesis bazında toplam, kimlik yok':'Gişe tabletlerinden gelen mutabakat'}</span><h2>Ödüller ve mutabakat</h2></div></div>
+  return `<div class="head"><div><span class="eyebrow">${bel?'Tesis bazında toplam, kimlik yok':'Gişe telefonlarından gelen mutabakat'}</span><h2>Ödüller ve mutabakat</h2></div></div>
     <div class="kpis"><div class="kpi"><b class="num">${tot}</b><span>verilen ödül</span></div>
       ${bel?'':`<div class="kpi"><b class="num">${REDEEM.reduce((a,r)=>a+r.refund,0)}</b><span>verilemedi, puan iade</span></div>
       <div class="kpi ${REDEEM.some(r=>r.twin)?'bad':''}"><b class="num">${REDEEM.reduce((a,r)=>a+r.twin,0)}</b><span>çift kullanım</span></div>
       <div class="kpi ${REDEEM.some(r=>r.pend)?'warn':''}"><b class="num">${REDEEM.reduce((a,r)=>a+r.pend,0)}</b><span>mutabakat bekleyen</span></div>`}</div>
-    <div class="tablewrap"><table><thead><tr><th>Tesis</th><th>Kademe</th><th class="r">Verildi</th>${bel?'':'<th class="r">İade</th><th class="r">Ret</th><th class="r">Çift</th><th>Tablet son bağlantı</th>'}</tr></thead><tbody>
+    <div class="tablewrap"><table><thead><tr><th>Tesis</th><th>Kademe</th><th class="r">Verildi</th>${bel?'':'<th class="r">İade</th><th class="r">Ret</th><th class="r">Çift</th><th>Telefon son bağlantı</th>'}</tr></thead><tbody>
     ${REDEEM.map(r=>`<tr><td>${r.id} · ${r.n}</td><td>${r.t}</td><td class="r num">${r.given}</td>${bel?'':`<td class="r num">${r.refund}</td><td class="r num">${r.rej}</td><td class="r num">${r.twin?`<span class="chip no">${r.twin}</span>`:'0'}</td><td>${r.pend?`<span class="chip wait">${r.last} · ${r.pend} bekliyor</span>`:r.last}</td>`}</tr>`).join('')}
     </tbody></table></div>
     ${bel?'<p class="note">Belediye öğrencinin kimliğini, okulunu, adımını ya da sağlık verisini görmez. Bu tablo fatura ve kapasite planlaması içindir.</p>':''}

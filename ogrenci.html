@@ -370,14 +370,14 @@ function viewQR(){
       <div id="qr" aria-label="Ödül kodu"></div>
       <div class="timer num" id="timer">5:00</div>
       <span class="note">Bu kodu yalnızca <b>${T.f.n}</b> (${T.f.id}) gişesinde okutabilirsin.</span>
-      <div class="verify" id="verify"><span class="eyebrow">Gişe tableti (çevrimdışı)</span><span class="note">Görevlinin göreceğini denemek için aşağıdaki düğmeye bas.</span></div>
+      <div class="verify" id="verify"><span class="eyebrow">Gişe telefonu (çevrimdışı)</span><span class="note">Görevlinin göreceğini denemek için aşağıdaki düğmeye bas.</span></div>
       <div class="grid2" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%">
         <button class="btn" id="scan">Gişede okut</button>
         <select id="otherFac" aria-label="Başka gişe"><option value="">Başka gişede dene…</option>${TIERS.flatMap(t=>t.fac).filter(f=>f.id!==T.f.id).map(f=>`<option value="${f.id}">${f.id} · ${f.n}</option>`).join('')}</select>
       </div>
       <details style="width:100%;text-align:left"><summary class="note">Kodun içinde ne var?</summary>
         <div class="token">${JSON.stringify(T.payload,null,1).replace(/</g,'&lt;')}<br>imza: ${T.sig}…</div>
-        <p class="note">Kimlik bilgisi yoktur, yalnızca çalışma kodu. Tablet imzayı belediyenin kayıtlı açık anahtarıyla, internetsiz doğrular.</p></details>
+        <p class="note">Kimlik bilgisi yoktur, yalnızca çalışma kodu. Gişe telefonu imzayı belediyenin kayıtlı açık anahtarıyla, internetsiz doğrular.</p></details>
       <button class="btn ghost" id="cancel">Vazgeç</button></div>`;
 }
 function afterQR(){
@@ -398,7 +398,7 @@ function scan(facId){
   const sigOk=fakeSig(T.body)===T.sig, timeOk=left>0, facOk=facId===T.f.id, fresh=!S.used[T.payload.tid+facId];
   const pass=sigOk&&timeOk&&facOk&&fresh;
   const L=(ok,t)=>`<span class="${ok?'ok':'no'}">${ok?'✓':'✗'} ${t}</span>`;
-  $('#verify').innerHTML=`<span class="eyebrow">Gişe tableti ${facId} (çevrimdışı)</span>
+  $('#verify').innerHTML=`<span class="eyebrow">Gişe telefonu ${facId} (çevrimdışı)</span>
     ${L(sigOk,'İmza geçerli')}${L(timeOk,`Süre: ${Math.floor(left/60)}:${String(left%60).padStart(2,'0')} kaldı`)}
     ${L(facOk,facOk?`Tesis eşleşiyor (${facId})`:`Bu kod ${T.f.id} için, bu gişe ${facId}`)}
     ${L(fresh,fresh?'Bu gişede daha önce okutulmadı':'Bu kod bu gişede zaten kullanıldı')}
