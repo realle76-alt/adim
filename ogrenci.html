@@ -430,9 +430,8 @@ const QUESTIONS=[
       'İştahsızlık ya da aşırı yemek yemek',
       'Kendini kötü hissetmek; başarısız olduğunu ya da kendini veya aileni hayal kırıklığına uğrattığını düşünmek',
       'Ders çalışmak, okumak ya da televizyon izlemek gibi şeylere dikkatini vermekte zorlanmak',
-      'Başkalarının fark edeceği kadar yavaş hareket etmek ya da konuşmak; ya da tersine, her zamankinden çok daha kıpır kıpır, yerinde duramaz olmak',
-      'Ölmenin daha iyi olacağını ya da kendine bir şekilde zarar vermeyi düşünmek']
-     .map((q,i)=>({sec:'Son iki haftada aşağıdakiler seni ne sıklıkla rahatsız etti?',q,o:PHQ_OPTS,src:'PHQ-9',item:i+1})),
+      'Başkalarının fark edeceği kadar yavaş hareket etmek ya da konuşmak; ya da tersine, her zamankinden çok daha kıpır kıpır, yerinde duramaz olmak']
+     .map((q,i)=>({sec:'Son iki haftada aşağıdakiler seni ne sıklıkla rahatsız etti?',q,o:PHQ_OPTS,src:'PHQ-8',item:i+1})),
   {sec:'Uyku',q:'Son bir haftada okul gecelerinde genellikle kaç saat uyudun?',o:['6 saatten az','6–7 saat','7–8 saat','8–9 saat','9 saatten fazla'],src:'Uyku'}
 ];
 let SV=null;
@@ -457,7 +456,7 @@ function viewAnket(){
     <div class="bar"><i style="width:${(SV.i+1)/n*100}%;background:var(--lane)"></i></div>
     <span class="eyebrow">${Q.sec}</span><p class="q">${Q.q}</p>${Q.sub?`<span class="note">${Q.sub}</span>`:''}
     <div class="opts">${Q.o.map((o,i)=>`<button class="opt" data-opt="${i}" aria-pressed="${SV.a[SV.i]===i}">${o}</button>`).join('')}</div>
-    <span class="note">${Q.src==='PHQ-9'?'PHQ-9 maddeleri; metin geçerliliği gösterilmiş Türkçe formla karşılaştırılacaktır.':'Kısa anket sorusu (taslak).'}</span>`;
+    <span class="note">${Q.src==='PHQ-8'?'PHQ-8 maddeleri (PHQ-9\'un ilk 8 maddesi); metin resmî Türkçe formla karşılaştırılacaktır.':'Kısa anket sorusu (taslak).'}</span>`;
 }
 function bindSurvey(){
   bindKayit();
@@ -468,9 +467,9 @@ function bindSurvey(){
   $('#svLater')&&($('#svLater').onclick=()=>{ SV=null; S.tab='bugun'; render(); });
   $('#svBack')&&($('#svBack').onclick=()=>go(SV.i-1));
   document.querySelectorAll('[data-opt]').forEach(b=>b.onclick=()=>{ SV.a[SV.i]=+b.dataset.opt; document.querySelectorAll('[data-opt]').forEach(x=>x.setAttribute('aria-pressed',x===b)); setTimeout(()=>go(SV.i+1),250); });
-  $('#svDone')&&($('#svDone').onclick=()=>{ if(SV.a.length<QUESTIONS.length||SV.a.some(x=>x===undefined)){ go(SV.a.findIndex(x=>x===undefined)<0?SV.a.length:SV.a.findIndex(x=>x===undefined)); return; } S.surveys[SV.key]=true; if(SV.reg){ S.registered=true; log('Kayıt tamamlandı: çalışma kodu, adım izni ve başlangıç anketi alındı'); } const phq=SV.a.slice(0,9).reduce((x,y)=>x+y,0), i9=SV.a[8]>0;
-    log(`${SURVEY_NAME[SV.key]} gönderildi. PHQ-9 toplamı ${phq} (öğrenci görmez).`);
-    if(phq>=10||i9) log(`Panelde anlık uyarı: ${i9?'9. madde pozitif, klinik ekip aynı gün arar':'PHQ-9 ≥ 10'}; ÇADÖ'ye yönlendirme. Okulla paylaşılmaz.`,true); SV=null; S.tab='bugun'; save(); render(); });
+  $('#svDone')&&($('#svDone').onclick=()=>{ if(SV.a.length<QUESTIONS.length||SV.a.some(x=>x===undefined)){ go(SV.a.findIndex(x=>x===undefined)<0?SV.a.length:SV.a.findIndex(x=>x===undefined)); return; } S.surveys[SV.key]=true; if(SV.reg){ S.registered=true; log('Kayıt tamamlandı: çalışma kodu, adım izni ve başlangıç anketi alındı'); } const phq=SV.a.slice(0,8).reduce((x,y)=>x+y,0);
+    log(`${SURVEY_NAME[SV.key]} gönderildi. PHQ-8 toplamı ${phq} (öğrenci görmez).`);
+    if(phq>=10) log(`Panelde uyarı: PHQ-8 ≥ 10; klinik ekip 3 iş günü içinde görüşür, gerekirse ÇADÖ'ye yönlendirir. Okulla paylaşılmaz.`,true); SV=null; S.tab='bugun'; save(); render(); });
 }
 let RG=0;
 function viewKayit(){

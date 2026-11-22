@@ -228,7 +228,7 @@ for(let i=1;i<=120;i++){
     steps[DI(D.d)]=s;
     if(arm==='M'&&D.d>=0){ if(D.week!==wk){wk=D.week;wkPts=0;} let p=s>=target?100:s>target/2?50:0; p=Math.min(p,600-wkPts); wkPts+=p; pts[DI(D.d)]=p; }
   }
-  const phq0=Math.max(0,Math.min(27,Math.round(Math.abs(norm(5,4)))));
+  const phq0=Math.max(0,Math.min(24,Math.round(Math.abs(norm(5,4)))));
   const vz0=norm(0.45,1.05);
   P.push({code:'ADM-'+String(i).padStart(3,'0'), name:pick(AD)+' '+pick(SOY), school:SCHOOLS[i%2?(rnd()<.5?0:1):(rnd()<.5?1:0)], sex:rnd()<.52?'K':'E', vki:vz0>1?'>+1 SDS':'≤+1 SDS', arm,
     base, target, steps, ptsArr:pts, phoneless, sync:phoneless?Math.floor(rnd()*7)+1:(rnd()<.06?Math.floor(rnd()*5)+2:0),
@@ -277,10 +277,10 @@ P.forEach(p=>{
 });
 
 const ALERTS=[
-  {id:1,code:'ADM-041',src:'PHQ-9',score:9,i9:true,at:'Bugün 09:12',status:'yeni'},
-  {id:2,code:'ADM-072',src:'PHQ-9',score:16,i9:false,at:'Dün 21:40',status:'yeni'},
-  {id:3,code:'ADM-007',src:'PHQ-9',score:14,i9:false,at:'3 gün önce',status:'arandi'},
-  {id:4,code:'ADM-103',src:'PHQ-9',score:12,i9:false,at:'5 gün önce',status:'yonlendirildi'},
+  {id:1,code:'ADM-041',src:'PHQ-8',score:11,i9:false,at:'Bugün 09:12',status:'yeni'},
+  {id:2,code:'ADM-072',src:'PHQ-8',score:16,i9:false,at:'Dün 21:40',status:'yeni'},
+  {id:3,code:'ADM-007',src:'PHQ-8',score:14,i9:false,at:'3 gün önce',status:'arandi'},
+  {id:4,code:'ADM-103',src:'PHQ-8',score:12,i9:false,at:'5 gün önce',status:'yonlendirildi'},
   {id:5,code:'ADM-020',src:'HEEADSSS',score:null,i9:false,at:'0. ay ölçümü',status:'kapandi',note:'Madde kullanımı alanında risk'},
   {id:6,code:'ADM-028',src:'Nabız',score:null,i9:false,hr:'Hareketsizken 14 dk boyunca ≥ 130 atım/dk (en yüksek 152)',at:'Dün 23:10',status:'yeni'},
   {id:7,code:'ADM-096',src:'Nabız',score:null,i9:false,hr:'Gece 02:40, adım yokken 11 dk ≥ 130 atım/dk',at:'4 gün önce',status:'arandi',note:'Veli: saat gevşekti, şikâyet yok'}
@@ -362,7 +362,7 @@ const METRICS={
   half:{n:'Hedefin yarısını geçen gün (%)',fmt:v=>'%'+Math.round(v)},
   valid:{n:'Geçerli gün oranı (%)',fmt:v=>'%'+Math.round(v),zero:true},
   pts:{n:'Haftalık kazanılan puan (müdahale)',fmt:v=>TR(v),armOnly:'M'},
-  phq:{n:'PHQ-9 toplamı (ölçüm turları)',fmt:v=>v.toFixed(1),health:1,rounds:1},
+  phq:{n:'PHQ-8 toplamı (ölçüm turları)',fmt:v=>v.toFixed(1),health:1,rounds:1},
   vz:{n:'VKİ SDS (ölçüm turları)',fmt:v=>v.toFixed(2),health:1,rounds:1},
   wht:{n:'Bel/boy oranı (ölçüm turları)',fmt:v=>v.toFixed(3),health:1,rounds:1},
   sbp:{n:'Sistolik kan basıncı (ölçüm turları)',fmt:v=>v.toFixed(1),health:1,rounds:1},
@@ -507,7 +507,7 @@ function vKatilimci(){
   if(sv.arm) cols.push(['Kol',armCell]);
   if(sv.steps) cols.push(['Temel ortanca',p=>TR(p.base),'r'],['Dönem ort.',p=>TR(p.last7),'r'],['Geçerli gün',p=>'%'+p.valid,'r'],['Cihaz',p=>p.phoneless?'<span class="chip wait">Yalnız saat</span>':'Saat + telefon'],['Son eşitleme',p=>p.sync?`<span class="chip ${p.sync>1?'wait':'mute'}">${p.sync} gün önce</span>`:'<span class="chip ok">Bugün</span>']);
   if(sv.points) cols.push(['Dönem puanı',p=>p.arm==='M'||sv.arm==='ab'?TR(p.pts):'—','r']);
-  if(sv.health) cols.push(['PHQ-9 (0. ay)',p=>p.phq0,'r']);
+  if(sv.health) cols.push(['PHQ-8 (0. ay)',p=>p.phq0,'r']);
   cols.push(['6. ay ölçümü',p=>`<span class="chip ${p.m6==='randevu'?'wait':'mute'}">${p.m6==='randevu'?'Randevulu':'Bekliyor'}</span>`]);
   const hidden=[!sv.arm&&'kol',!sv.steps&&'adım ve cihaz',!sv.points&&'puan',!sv.health&&'sağlık ölçümleri',!FIELD()&&'ad-soyad ve iletişim'].filter(Boolean);
   return `<div class="head"><div><span class="eyebrow">${rows.length} öğrenci</span><h2>Katılımcılar</h2></div>
@@ -535,9 +535,9 @@ function vKalite(){
 const AST={yeni:['no','Yeni'],arandi:['wait','Arandı'],yonlendirildi:['wait',"ÇADÖ'ye yönlendirildi"],kapandi:['ok','Kapandı']};
 function vRisk(){
   const full=acc('risk')==='y';
-  return `<div class="head"><div><span class="eyebrow">PHQ-9 ≥ 10, 9. madde pozitif, HEEADSSS riski ya da nabız eşiği (taslak)</span><h2>Risk uyarıları</h2></div></div>
+  return `<div class="head"><div><span class="eyebrow">PHQ-8 ≥ 10, HEEADSSS riski ya da nabız eşiği (taslak)</span><h2>Risk uyarıları</h2></div></div>
     <div class="banner info"><b>Nabız uyarıları taslaktır</b> ve 10 Kasım toplantısında karara bağlanacak. Yalnızca bu panelde görünür; öğrenciye ya da veliye otomatik bildirim gitmez. Kural: adım ≤ ${HRCUT.stepsMax}/dk iken ${HRCUT.min} dk boyunca ≥ ${HRCUT.bpm} atım/dk.${full&&S.role!=='klinik'?' <button class="btn sm ghost" id="hrcut">Eşikleri değiştir</button>':''}</div>
-    <div class="banner ${full?'bad':'info'}">${full?'9. madde pozitifse öğrenci aynı gün aranır. Bu bilgiler okulla ve belediyeyle paylaşılmaz.':'Proje yürütücüsü uyarıların durumunu izler; iletişim bilgisini ve yanıtların ayrıntısını göremez.'}</div>
+    <div class="banner ${full?'bad':'info'}">${full?'PHQ-8 ≥ 10 olan öğrenciyle klinik ekip 3 iş günü içinde görüşür. İntihar riski uygulamada sorulmaz; Çapa ziyaretinde hekim yüz yüze değerlendirir. Bu bilgiler okulla ve belediyeyle paylaşılmaz.':'Proje yürütücüsü uyarıların durumunu izler; iletişim bilgisini ve yanıtların ayrıntısını göremez.'}</div>
     ${ALERTS.map(a=>{ const st=AST[a.status]; return `<div class="alert ${a.i9?'i9':''}"><header><div><b class="mono">${a.code}</b> · ${a.src}${a.hr&&full?` · ${a.hr}`:''}${a.score!==null&&full?` · toplam ${a.score}`:''}${a.i9?' · <b style="color:var(--bad)">9. madde pozitif</b>':''}</div><span class="note">${a.at}</span></header>
       ${a.note&&full?`<span class="note">${a.note}</span>`:''}
       <div class="row"><span class="chip ${st[0]}">${st[1]}</span>
@@ -628,7 +628,7 @@ function vAktar(){
   return `<div class="head"><div><span class="eyebrow">Kodlu, kimliksiz veri seti</span><h2>Dışa aktarım</h2></div></div>
     <div class="banner info">${full?'Dışa aktarılan dosyada kol sütunu sahte etiketlidir (A/B). Ad, telefon ve okul numarası hiçbir zaman dışa aktarılmaz.':'Proje yürütücüsü dışa aktarım geçmişini görür; dosya üretme yetkisi biyoistatistikçidedir.'}</div>
     <div class="card"><div class="tablewrap"><table><thead><tr><th>Veri seti</th><th>İçerik</th><th></th></tr></thead><tbody>
-    ${[['Günlük adım','kod, tarih, saat adımı, telefon adımı, geçerli gün, hava durumu'],['Ölçümler','kod, tur, antropometri, KB, laboratuvar, VKİ SDS'],['Ölçekler','kod, tur, PHQ-9 maddeleri ve toplam, uyku'],['Puan defteri','kod, tarih, işlem, puan, tavan'],['Ödül kullanımı','kod, tesis, kademe, durum']].map(d=>`<tr><td>${d[0]}</td><td class="note" style="white-space:normal">${d[1]}</td><td>${full?`<button class="btn sm" data-exp="${d[0]}">CSV indir</button>`:''}</td></tr>`).join('')}
+    ${[['Günlük adım','kod, tarih, saat adımı, telefon adımı, geçerli gün, hava durumu'],['Ölçümler','kod, tur, antropometri, KB, laboratuvar, VKİ SDS'],['Ölçekler','kod, tur, PHQ-8 maddeleri ve toplam, uyku'],['Puan defteri','kod, tarih, işlem, puan, tavan'],['Ödül kullanımı','kod, tesis, kademe, durum']].map(d=>`<tr><td>${d[0]}</td><td class="note" style="white-space:normal">${d[1]}</td><td>${full?`<button class="btn sm" data-exp="${d[0]}">CSV indir</button>`:''}</td></tr>`).join('')}
     </tbody></table></div></div>`;
 }
 function vDenetim(){
@@ -705,7 +705,7 @@ function bind(){
   $('#review')&&($('#review').onclick=()=>{ audit('Yetki gözden geçirmesi başlatıldı','tüm roller'); toast('Tüm kullanıcıların yetkileri gözden geçirme listesine alındı.'); });
 }
 function exportCsv(name){
-  let rows=[['kod','kol','okul','temel_ortanca','son7_ort','gecerli_gun','phq9_0ay']];
+  let rows=[['kod','kol','okul','temel_ortanca','son7_ort','gecerli_gun','phq8_0ay']];
   P.forEach(p=>rows.push([p.code,p.arm==='M'?'A':'B',p.school,p.base,p.last7,p.valid,p.phq0]));
   const blob=new Blob(['﻿'+rows.map(r=>r.join(';')).join('\n')],{type:'text/csv'});
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`ADIM-IST_${name.replace(/\s/g,'_')}_ornek.csv`; a.click();
